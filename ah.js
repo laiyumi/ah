@@ -9,6 +9,8 @@ let currentLevel = 1;
 let withinTargetTimer = null;
 let brightness = 0;
 let nextTargetCircleRadius = 100;
+let globalScalingFactor = 200;
+let runningMaxCircleRadius = 0;
 
 class Circle {
     constructor(x, y, radius, color, strokeColor, lineWidth) {
@@ -110,11 +112,14 @@ function animate() {
                     document.body.style.backgroundColor = `hsl(0, 50%, ${255 - brightness}%)`;
                     console.log("you are within the target!");
 
-                    // Generate a new radius for target circle between 100 and 200 when the user was within target for over 1 second
-                    nextTargetCircleRadius = Math.floor(Math.random() * (200 - 100 + 1)) + 100;
+                    // Generate a new radius for target circle for the next target
+                    nextTargetCircleRadius = Math.random() * runningMaxCircleRadius;
+
+                    // Next target circle radius should not be smaller than the current circle radius but should be smaller than the running max circle radius
+                    nextTargetCircleRadius = Math.max(nextTargetCircleRadius, circle.radius);
 
                     withinTargetTimer = null;
-                }, 1000);
+                }, 500);
             }
         } else {
             if (withinTargetTimer !== null) {
@@ -122,7 +127,10 @@ function animate() {
                 withinTargetTimer = null;
             }
         }
-        circle.radius = volume * 150;
+        circle.radius = volume * globalScalingFactor;
+
+        // Update the running max circle radius
+        runningMaxCircleRadius = Math.max(runningMaxCircleRadius, circle.radius);
     }
 
     // circle radius should not be below 5
