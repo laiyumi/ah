@@ -86,13 +86,13 @@ let targetCircle = new Circle(canvas.width / 2, canvas.height / 2, 100, null, "r
 function animate() {
     // clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
 
 
     // get the volume and update the circle radius
     let volume = volumeMeter.getVolume();
 
-    
+
     if (currentLevel === 1) {
         // if circle radius is greater than 70% of window's diagonal, keep growing the circle
         if (circle.radius > Math.sqrt(canvas.width ** 2 + canvas.height ** 2) / 2 * 0.5) {
@@ -135,7 +135,7 @@ function animate() {
                 withinTargetTimer = null;
             }
         }
-        
+
         circle.radius = volume * globalScalingFactor;
 
         // Update the running max circle radius
@@ -148,8 +148,8 @@ function animate() {
     // draw the circle
     circle.draw();
 
-        // update the circle radius
-        targetCircle.drawHollowCircle();
+    // update the circle radius
+    targetCircle.drawHollowCircle();
 
     // change the background color
     changeBgColor(targetCircle, circle);
@@ -202,12 +202,12 @@ function checkLevelCompletion() {
 function changeBgColor(circle1, circle2) {
     // set the threshold for collision
     let radiusdiff = Math.abs(circle1.radius - circle2.radius);
-   
+
     // map the radius difference to a value between 0 - 255
     brightness = Math.floor(radiusdiff * 2.55);
     // make sure the brightness is between 0 and 255
     brightness = Math.min(Math.max(brightness, 0), 255);
-    
+
     // use HSL to set the background color
     document.body.style.backgroundColor = `hsl(0, 0%, ${brightness}%)`;
 }
@@ -218,3 +218,17 @@ function changeBgColor(circle1, circle2) {
 window.onload = function () {
     animate();
 }
+
+window.addEventListener("resize", function() {
+    // Update canvas width and height
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Update circle position
+    circle.x = canvas.width / 2;
+    circle.y = canvas.height / 2;
+
+    // Update target circle position
+    targetCircle.x = canvas.width / 2;
+    targetCircle.y = canvas.height / 2;
+});
