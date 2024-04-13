@@ -86,21 +86,28 @@ let targetCircle = new Circle(canvas.width / 2, canvas.height / 2, 100, null, "r
 function animate() {
     // clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+
 
     // get the volume and update the circle radius
     let volume = volumeMeter.getVolume();
-    let newRadius = currentLevel === 1 ? Math.pow(volume, 2) * Math.max(canvas.width, canvas.height) : volume * 300;
-    
-    // draw the circle
-    circle.draw();
-    targetCircle.drawHollowCircle();
-    circle.updateRadius(newRadius);
 
+    
     if (currentLevel === 1) {
-        circle.radius = 1.4 * Math.pow(volume, 2) * Math.max(canvas.width, canvas.height);
+        // if circle radius is greater than 70% of window's diagonal, keep growing the circle
+        if (circle.radius > Math.sqrt(canvas.width ** 2 + canvas.height ** 2) / 2 * 0.5) {
+            console.log("yes");
+            circle.updateRadius(circle.radius * 1.8);
+        } else {
+            console.log("no");
+            circle.radius = Math.pow(volume, 3) * Math.max(canvas.width, canvas.height);
+        }
         targetCircle.radius = 0;
     }
     else {
+
+        let newRadius = currentLevel === 1 ? Math.pow(volume, 2) * Math.max(canvas.width, canvas.height) : volume * 300;
+        circle.updateRadius(newRadius);
         targetCircle.radius = nextTargetCircleRadius;
         let isWithinTarget = checkCollision(circle, targetCircle);
         let targetCircleColor = isWithinTarget ? 'green' : 'red';
@@ -113,10 +120,11 @@ function animate() {
                     console.log("you are within the target!");
 
                     // Generate a new radius for target circle for the next target
-                    nextTargetCircleRadius = Math.random() * runningMaxCircleRadius;
+                    nextTargetCircleRadius = 2 * Math.random() * runningMaxCircleRadius;
 
-                    // Next target circle radius should not be smaller than the current circle radius but should be smaller than the running max circle radius
-                    nextTargetCircleRadius = Math.max(nextTargetCircleRadius, circle.radius);
+                    // next target circle radius should not be below 5 or exceed the running max circle radius
+                    nextTargetCircleRadius = Math.min(Math.max(nextTargetCircleRadius, 20), runningMaxCircleRadius);
+
 
                     withinTargetTimer = null;
                 }, 500);
@@ -127,14 +135,21 @@ function animate() {
                 withinTargetTimer = null;
             }
         }
+        
         circle.radius = volume * globalScalingFactor;
 
         // Update the running max circle radius
         runningMaxCircleRadius = Math.max(runningMaxCircleRadius, circle.radius);
     }
 
-    // circle radius should not be below 5
-    circle.radius = Math.max(circle.radius, 5);
+    // circle radius should not be below 20
+    circle.radius = Math.max(circle.radius, 20);
+
+    // draw the circle
+    circle.draw();
+
+        // update the circle radius
+        targetCircle.drawHollowCircle();
 
     // change the background color
     changeBgColor(targetCircle, circle);
@@ -170,7 +185,7 @@ function checkLevelCompletion() {
             let diag = Math.sqrt(canvas.width ** 2 +
                 canvas.height ** 2);
             // return true if the circle's diameter is >= window's diagonal
-            if (circle.radius >= diag / 2) {
+            if (circle.radius >= (diag / 2)) {
                 console.log("Level 1 completed!");
                 return true;
             }
