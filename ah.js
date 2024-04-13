@@ -6,11 +6,13 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 class Circle{
-    constructor(x, y, radius, color){
+    constructor(x, y, radius, color, strokeColor, lineWidth){
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.color = color;
+        this.strokeColor = strokeColor;
+        this.lineWidth = lineWidth;
     }
 
     draw(){
@@ -18,6 +20,16 @@ class Circle{
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
         ctx.fillStyle = this.color;
         ctx.fill();
+        ctx.strokeStyle = this.strokeColor;
+        ctx.lineWidth = this.lineWidth;
+    }
+
+    drawHollowCircle(){
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+        ctx.strokeStyle = this.strokeColor;
+        ctx.lineWidth = this.lineWidth;
+        ctx.stroke();
     }
 
 }
@@ -52,7 +64,8 @@ class VolumeMeter {
 
 // create a new volume meter and a circle
 let volumeMeter = new VolumeMeter();
-let circle = new Circle(canvas.width/2, canvas.height/2, 50, "black");
+let circle = new Circle(canvas.width/2, canvas.height/2, 50, "black", null, null);
+let targetCircle = new Circle(canvas.width/2, canvas.height/2, 100, null, "red", 5);
 
 function animate(){
     // clear the canvas
@@ -60,13 +73,32 @@ function animate(){
 
     // draw the circle
     circle.draw();
+    targetCircle.drawHollowCircle();
+
 
     // get the volume and update the circle radius
     let volume = volumeMeter.getVolume();
-    circle.radius = volume * 100;
+    circle.radius = volume * 150;
 
     // call the animate function again
     requestAnimationFrame(animate);
+
+    checkCollision(targetCircle, circle);
+
+}
+
+function checkCollision(circle1, circle2){
+    // set the threshold for collision
+    let radiusdiff = circle1.radius - circle2.radius;
+
+    if(Math.abs(radiusdiff) < 10){
+        console.log("you got it!!");
+        console.log(radiusdiff);
+
+        return true;
+    } else {
+        return false;
+    }
 }
 
 
