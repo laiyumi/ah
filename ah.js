@@ -123,7 +123,7 @@ function animate() {
                     nextTargetCircleRadius = 2 * Math.random() * runningMaxCircleRadius;
 
                     // next target circle radius should not be below 5 or exceed the running max circle radius
-                    nextTargetCircleRadius = Math.min(Math.max(nextTargetCircleRadius, 20), runningMaxCircleRadius);
+                    nextTargetCircleRadius = Math.min(Math.max(nextTargetCircleRadius, 50), runningMaxCircleRadius);
 
 
                     withinTargetTimer = null;
@@ -143,7 +143,7 @@ function animate() {
     }
 
     // circle radius should not be below 20
-    circle.radius = Math.max(circle.radius, 20);
+    circle.radius = Math.max(circle.radius, 50);
 
     // draw the circle
     circle.draw();
